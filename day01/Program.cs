@@ -1,5 +1,3 @@
-﻿
-
 var filename = "input.txt";
 var lines = System.IO.File.ReadAllText(filename);
 var elves = new List<int>();
