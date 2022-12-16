@@ -1,10 +1,12 @@
-﻿var filename = "input.txt";
+using System.Text.RegularExpressions;
+
+var filename = "input.txt";
 var lines = System.IO.File.ReadAllText(filename);
+var offset = 0;
 
-parseStacks(lines.Split("\n"));
+manipulateStacks(parseStacks(lines.Split("\n"), out offset), lines.Split("\n"), offset + 1);
 
-
-List<Stack<char>> parseStacks(string [] input) {
+List<Stack<char>> parseStacks(string [] input, out int offset) {
     var i = 0;
 
     // read the list of stacks
@@ -12,6 +14,7 @@ List<Stack<char>> parseStacks(string [] input) {
         ++i;
     }
     var indices = input[i-1];
+    offset = i;
 
     // get the number of stacks
     var stackCount = int.Parse(indices.Trim()[indices.Trim().Length -1].ToString());
@@ -28,4 +31,26 @@ List<Stack<char>> parseStacks(string [] input) {
         }
     }
     return stacks;
+}
+
+void manipulateStacks(List<Stack<char>> sl, string [] instructions, int offset) {
+    for (var i=0; i < instructions.Length - offset; i++) {
+        var rx = new Regex(@"\d+", RegexOptions.Compiled);
+        var matches = rx.Matches(instructions[offset + i]);
+
+        if (matches.Count == 3) {
+            var amount = int.Parse(matches[0].ToString());
+            var from = int.Parse(matches[1].ToString());
+            var to = int.Parse(matches[2].ToString());
+
+            for (var j=0; j < amount; j++) {
+                sl[to-1].Push(sl[from-1].Pop());
+            }
+        }
+    }
+    foreach (var stack in sl) {
+        if (stack.Count > 0)
+            Console.Write(stack.Pop());
+    }
+    Console.WriteLine();
 }
