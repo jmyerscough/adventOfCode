@@ -5,6 +5,7 @@ var lines = System.IO.File.ReadAllText(filename);
 var offset = 0;
 
 manipulateStacks(parseStacks(lines.Split("\n"), out offset), lines.Split("\n"), offset + 1);
+manipulateStacksPart2(parseStacks(lines.Split("\n"), out offset), lines.Split("\n"), offset + 1);
 
 List<Stack<char>> parseStacks(string [] input, out int offset) {
     var i = 0;
@@ -46,6 +47,33 @@ void manipulateStacks(List<Stack<char>> sl, string [] instructions, int offset) 
             for (var j=0; j < amount; j++) {
                 sl[to-1].Push(sl[from-1].Pop());
             }
+        }
+    }
+    foreach (var stack in sl) {
+        if (stack.Count > 0)
+            Console.Write(stack.Pop());
+    }
+    Console.WriteLine();
+}
+
+void manipulateStacksPart2(List<Stack<char>> sl, string [] instructions, int offset) {
+    for (var i=0; i < instructions.Length - offset; i++) {
+        var rx = new Regex(@"\d+", RegexOptions.Compiled);
+        var matches = rx.Matches(instructions[offset + i]);
+
+        if (matches.Count == 3) {
+            var amount = int.Parse(matches[0].ToString());
+            var from = int.Parse(matches[1].ToString());
+            var to = int.Parse(matches[2].ToString());
+
+            var buffer = new char[amount]; 
+            var k = 0;
+            while (k < amount)
+                buffer[k++] = sl[from-1].Pop();
+
+            Array.Reverse(buffer);
+            foreach (var c in buffer)
+                sl[to-1].Push(c);
         }
     }
     foreach (var stack in sl) {
